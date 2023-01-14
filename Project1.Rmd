@@ -1,0 +1,83 @@
+
+---
+title: "Clustering Countries"
+author: "Zehra Usta"
+date: "2022/2023"
+output: 
+  html_document:
+    toc: true
+    toc_float:
+      toc_collapsed: true
+    toc_depth: 5
+    number_sections: false
+    theme: readable
+---
+
+## Introduction
+
+Objective of this project is clustering countries according to their features in order to identify their development level. In this project, clustering analysis will be used for helping NGO's to determine their budget to help people in undeveloped countries. Dataset consist of 167 country with features such as health, income and inflation.
+
+## Data Preparation
+
+
+
+```{r, results = FALSE}
+library(cluster)
+library(factoextra)
+```
+
+```{r}
+countries <- read.csv("Country-data.csv")  
+head(countries)
+
+```
+
+```{r}
+summary(countries)
+```
+```{r}
+str(countries)
+```
+```{r}
+countries[!complete.cases(countries),]
+```
+```{r}
+countries$income <- as.numeric(countries$income)
+countries$gdpp <- as.numeric(countries$gdpp)
+```
+
+```{r}
+str(countries)
+```
+```{r}
+df <- countries
+names(df) <- NULL
+
+```
+
+```{r}
+matrix1 <- as.matrix(df[,2:10])
+newdf <- t(matrix1)
+colnames(newdf) <- countries$country
+
+t(newdf)
+```
+
+
+
+```{r}
+km<-eclust(t(newdf), "kmeans", hc_metric="euclidean",k=3) 
+fviz_silhouette(km) 
+
+km$withinss
+
+```
+
+```{r}
+pam<-eclust(t(newdf), "pam", hc_metric="euclidean",k=3) 
+fviz_silhouette(pam) 
+```
+```{r}
+clara<-eclust(t(newdf), "clara", hc_metric="euclidean",k=3) 
+fviz_silhouette(clara) 
+```
