@@ -1,0 +1,89 @@
+---
+title: "Dimension Reduction"
+author: "Zehra Usta"
+date: "2022/2023"
+output: 
+  html_document:
+    toc: true
+    toc_float:
+      toc_collapsed: true
+    toc_depth: 5
+    number_sections: false
+    theme: readable
+---
+
+```{r, results = FALSE}
+library(cluster)
+library(factoextra)
+library(corrplot) # to plot nice correlations
+library(clusterSim) # to normalize data quickly
+library(GGally)
+```
+
+```{r}
+countries <- read.csv("Country-data.csv")  
+head(countries)
+```
+
+```{r}
+
+
+summary(countries)
+str(countries)
+countries[!complete.cases(countries),]
+countries$income <- as.numeric(countries$income)
+countries$gdpp <- as.numeric(countries$gdpp)
+
+```
+
+```{r}
+yyy.cor<-cor(countries[,-1], method="pearson") 
+corrplot(yyy.cor, order ="alphabet", tl.cex=0.6)
+
+```
+
+```{r}
+yyy.n<-data.Normalization(countries[,-1], type="n1",normalization="column")
+yyy.n.cor<-cor(yyy.n, method="pearson") 
+corrplot(yyy.n.cor, order ="alphabet", tl.cex=0.6)
+
+```
+
+```{r}
+ggpairs(as.data.frame(countries[,-1]))
+```
+
+```{r}
+library(qgraph)
+qgraph(cor(countries[,-1]), shape="rectangle", posCol="darkgreen", negCol="darkmagenta")
+
+```
+
+```{r}
+
+# step 1: Standardize / normalize variables (variables get mean=0 & sd=1)
+library(clusterSim) 		# to normalize data quickly
+sub<-countries[,-1]	# smaller dataset to see the results better
+sub.n<-data.Normalization(sub, type="n1", normalization="column")
+summary(sub.n)
+
+```
+
+```{r}
+# step 2: calculate dissimilarities – distance matrix
+# remember what is your unit of analysis
+dist.sub<-dist(t(sub.n))
+dist.sub
+
+```
+
+```{r}
+# step 3: run MDS
+fit.data<-mds(dist.sub, ndim=2,  type="ratio") # from smacof::
+fit.data			# see quality of fit
+summary(fit.data)	# see new coordinates & stress per point 
+
+```
+
+```{}
+```
